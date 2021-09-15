@@ -614,4 +614,37 @@ impl WithdrawalClient {
             Some(secret_key)
         )
     }
+
+    // Query capital config.
+    /// # Example
+    ///
+    /// ```no_run
+    /// # use tokio_binance::{WithdrawalClient, BINANCE_US_URL};
+    /// use serde_json::Value;
+    /// 
+    /// # #[tokio::main]
+    /// # async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    /// # let client = WithdrawalClient::connect("<api-key>", "<secret-key>", BINANCE_US_URL)?;
+    /// let response = client
+    ///     // restricted to one asset at a time.
+    ///     .get_capital_config()
+    ///     // optional: processing time for request; default is 5000, can't be above 60000.
+    ///     .with_recv_window(8000)
+    ///     //
+    ///     .json::<Vec<Value>>()
+    ///     .await?;
+    /// # Ok(())
+    /// # }
+    /// ```
+    pub fn get_capital_config(&self) -> ParamBuilder<'_, '_, AssetDetailParams> {
+        let Self { api_key, secret_key, url, client } = self;
+        let url = url.join("/sapi/v1/capital/config/getall").unwrap();
+
+        ParamBuilder::new(
+            Parameters::default(),
+            client.get(url),
+            Some(api_key),
+            Some(secret_key)
+        )
+    }
 }
